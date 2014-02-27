@@ -1,6 +1,8 @@
 /*-***
  * To read PGN notation.
  */
+
+package parsers;
 import java_cup.runtime.*;
 
 %%
@@ -17,20 +19,12 @@ import java_cup.runtime.*;
 %class PGNLexer
 
 %{
+  StringBuffer string = new StringBuffer();
 
-/**
- * Return a new Symbol with the given token id, and with the current line and
- * column numbers.
- */
 Symbol newSym(int tokenId) {
     return new Symbol(tokenId, yyline, yycolumn);
 }
 
-/**
- * Return a new Symbol with the given token id, the current line and column
- * numbers, and the given token value.  The value is used for tokens such as
- * identifiers and numbers.
- */
 Symbol newSym(int tokenId, Object value) {
     return new Symbol(tokenId, yyline, yycolumn, value);
 }
@@ -41,72 +35,71 @@ Symbol newSym(int tokenId, Object value) {
 /*-*
  * PATTERN DEFINITIONS:
  */
-letter          = [A-Za-z]
-digit           = [0-9]
-alphanumeric    = {letter}|{digit}
-other_id_char   = [_]
-identifier      = {letter}({alphanumeric}|{other_id_char})*
-integer         = {digit}*
-real            = {integer}\.{integer}
-char            = '.'
-leftbracket     = \[
-rightbracket    = \]
-nonrightbracket = [^\]]
-tagbody         = {nonrightbracket}*\"{alphanumeric}\"
-infotag         = {leftbracket}{tagbody}{rightbracket}
-leftbrace       = \{
-rightbrace      = \}
-nonrightbrace   = [^}]
-comment_body    = {nonrightbrace}*
-comment         = {leftbrace}{comment_body}{rightbrace}
-whitespace      = [ \n\t]
-castle          = O-O-O|O-O
+ALPHA=[A-Za-z]
+DIGIT=[0-9]
+castleKingSide          = (O-O-O)
+castleQueenSide         = (O-O)
+score           = 1\/2\-1\/2|1-0|0-1
+/*
+If these letters don't work out, these ones will.
+[^\n\"\]\}\r\t]
+[A-Za-z0-9_\,\\\/\-\.|\"]+
+*/
+STRING_LETTERS = [^\n\"\]\}\r\t]+
+STRING_TEXT= {STRING_LETTERS}([\ ]?{STRING_LETTERS})*
+commonMove = {ALPHA}{DIGIT}
+specifyPiece = {ALPHA}{commonMove}
+takingPiece = {ALPHA}x{commonMove}
+takingPieceLongForm = {specifyPiece}x{commonMove}
+removingAmbiguity = {ALPHA}({ALPHA}|{DIGIT}){commonMove}
+removingAmbiguityAndTaking = {ALPHA}({ALPHA}|{DIGIT})x{commonMove}
+promotion = {commonMove}={ALPHA}
+algebraicMerged       = {promotion}|{commonMove}|{specifyPiece}|{takingPiece}|{takingPieceLongForm}|{removingAmbiguity}|{removingAmbiguityAndTaking}
+algebraic = {algebraicMerged}[\+]?
+WhiteSpace      = {LineTerminator} | [ \t\f]
+LineTerminator  = [\r|\n|\r\n]
 
-algebraic       = {letter}{letter}?{digit}|{castle}
 
-
+%state BRACKETED
+%state COMMENTS
 %%
 /**
  * LEXICAL RULES:
  */
-and             { return newSym(sym.AND); }
-array           { return newSym(sym.ARRAY); }
-begin           { return newSym(sym.BEGIN); }
-else            { return newSym(sym.ELSE); }
-end             { return newSym(sym.END); }
-if              { return newSym(sym.IF); }
-of              { return newSym(sym.OF); }
-or              { return newSym(sym.OR); }
-program         { return newSym(sym.PROGRAM); }
-procedure       { return newSym(sym.PROCEDURE); }
-then            { return newSym(sym.THEN); }
-type            { return newSym(sym.TYPE); }
-var             { return newSym(sym.VAR); }
-"*"             { return newSym(sym.TIMES); }
-"+"             { return newSym(sym.PLUS); }
-"-"             { return newSym(sym.MINUS); }
-"/"             { return newSym(sym.DIVIDE); }
-";"             { return newSym(sym.SEMI); }
-","             { return newSym(sym.COMMA); }
-"("             { return newSym(sym.LEFT_PAREN); }
-")"             { return newSym(sym.RT_PAREN); }
-"["             { return newSym(sym.LEFT_BRKT); }
-"]"             { return newSym(sym.RT_BRKT); }
-"="             { return newSym(sym.EQ); }
-"<"             { return newSym(sym.GTR); }
-">"             { return newSym(sym.LESS); }
-"<="            { return newSym(sym.LESS_EQ); }
-">="            { return newSym(sym.GTR_EQ); }
-"!="            { return newSym(sym.NOT_EQ); }
-":"             { return newSym(sym.COLON); }
-":="            { return newSym(sym.ASSMNT); }
-"."             { return newSym(sym.DOT); }
-{identifier}    { return newSym(sym.IDENT, yytext()); }
-{integer}       { return newSym(sym.INT, new Integer(yytext())); }
-{real}          { return newSym(sym.REAL, new Double(yytext())); }
-{char}          { return newSym(sym.CHAR, new Character(yytext().charAt(1))); }
-{comment}       { /* For this stand-alone lexer, print out comments. */
-                  System.out.println("Recognized comment: " + yytext()); }
-{whitespace}    { /* Ignore whitespace. */ }
-.               { System.out.println("Illegal char, '" + yytext() +
-                    "' line: " + yyline + ", column: " + yychar); }
+
+\[             {  yybegin(BRACKETED); return newSym(sym.LBRACKET); }
+\{              { yybegin(COMMENTS); return newSym(sym.LCURLY); }
+
+({DIGIT}+\.)    { return newSym(sym.NUMBER, yytext()); }
+{score}         { return newSym(sym.SCORE, yytext()); }
+{algebraic}     { return newSym(sym.ALGNOT, yytext()); }
+{castleKingSide}        { return newSym(sym.KING_CASTLE); }
+{castleQueenSide}       { return newSym(sym.QUEEN_CASTLE); }
+
+
+<BRACKETED> {
+    \"({STRING_TEXT})*\" {
+        String str = yytext().trim().substring(1,yytext().length() - 1);
+        return newSym(sym.QUOTESTR, str);
+    }
+
+    {STRING_TEXT} {
+        String str = yytext().trim();
+        return newSym(sym.STRING, str);
+    }
+
+    \]             { yybegin(YYINITIAL); return newSym(sym.RBRACKET); }
+}
+
+<COMMENTS> {
+    {STRING_TEXT} {
+        return newSym(sym.COMMENT, yytext().trim());
+    }
+
+    \} {yybegin(YYINITIAL); return newSym(sym.RCURLY); }
+}
+
+{WhiteSpace}*    { /* Do nothing. */ }
+
+[^]                              { throw new Error("Illegal character <"+
+                                                    yytext()+">"); }

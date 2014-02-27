@@ -17,7 +17,9 @@
                         </goals>
                         <configuration>
                             <outputDirectory>src/main/java/parsers</outputDirectory>
-                            <lexDefinitions>src/main/jflex</lexDefinitions>
+                            <lexDefinitions>
+                                <lexDefinition>src/main/java/parsers</lexDefinition>
+                            </lexDefinitions>
                         </configuration>
                     </execution>
                 </executions>

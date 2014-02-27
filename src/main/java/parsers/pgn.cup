@@ -1,0 +1,39 @@
+/* ----------------------Preliminary Declarations Section--------------------*/
+
+/* Import the class java_cup.runtime.*  */
+package parsers;
+
+import java_cup.runtime.*;
+
+/* ------------Declaration of Terminals and Non Terminals Section----------- */
+
+terminal           RBRACKET, LBRACKET, QUOTESTR, STRING, NUMBER, ALGNOT, SCORE,
+                    LCURLY, RCURLY, COMMENT, KING_CASTLE, QUEEN_CASTLE;
+
+non terminal      pgn, data, info, game, database, move;
+
+
+/* -------------Precedence and Associatively of Terminals Section----------- */
+
+
+
+/* ----------------------------Grammar Section-------------------- */
+    database ::= pgn | pgn pgn;
+
+    pgn      ::= data game
+                | game;
+
+    data     ::= data LBRACKET info RBRACKET
+                | LBRACKET info RBRACKET;
+
+    info     ::= STRING QUOTESTR;
+
+    game     ::= NUMBER move move game
+                | LCURLY COMMENT RCURLY
+                | NUMBER move move SCORE
+                | NUMBER move SCORE;
+
+    move     ::= ALGNOT
+                | KING_CASTLE
+                | QUEEN_CASTLE;
+
