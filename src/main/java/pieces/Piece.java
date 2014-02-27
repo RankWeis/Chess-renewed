@@ -8,78 +8,77 @@ import board.Tile;
 
 public final class Piece {
 
-	static Board	board		= new Board( );
+    private static Board board = new Board();
 
-	public static Board getBoard() {
-		return board;
-	}
-	public static void resetBoard() {
-		board = new Board( );
-	}
+    public static Board getBoard() {
+        return board;
+    }
 
-	public static void setBoard(Board board) {
-		Piece.board = board;
-	}
+    public static void resetBoard() {
+        board = new Board();
+    }
 
-	final Type		type;
+    public static void setBoard( Board board ) {
+        Piece.board = board;
+    }
 
-	final Color		color;
+    private final Type  type;
 
-	private boolean	firstMove	= true;
-	Location		location;
+    private final Color color;
 
-	private Tile	lastTile	= null;
+    private boolean     firstMove = true;
+    private Location    location;
 
-	public Piece(Type type, Color color) {
-		this( type, color, null );
-	}
+    private Tile        lastTile  = null;
 
-	public Piece(Type type, Color color, Location loc) {
-		this.type = type;
-		this.color = color;
-		this.location = loc;
-	}
+    public Piece( Type type, Color color ) {
+        this( type, color, null );
+    }
 
-	public ArrayList<Tile> getAllAttacks() {
-		return type.getLegalMoves( board, color, location, true );
-	}
+    public Piece( Type type, Color color, Location loc ) {
+        this.type = type;
+        this.color = color;
+        this.location = loc;
+    }
 
-	public ArrayList<Tile> getAllMoves() {
+    public ArrayList<Tile> getAllAttacks() {
+        return type.getLegalMoves( board, color, location, true );
+    }
 
-		ArrayList<Tile> ret = type.getLegalMoves( board, color, location );
-		return ret;
-	}
+    public ArrayList<Tile> getAllMoves() {
+        return type.getLegalMoves( board, color, location );
+    }
 
-	public Color getColor() {
-		return color;
-	}
+    public Color getColor() {
+        return color;
+    }
 
-	public Tile getLastTile() {
-		return lastTile;
-	}
+    public Tile getLastTile() {
+        return lastTile;
+    }
 
-	public Location getLocation() {
-		return location;
-	}
+    public Location getLocation() {
+        return location;
+    }
 
-	public Type getType() {
-		return type;
-	}
+    public Type getType() {
+        return type;
+    }
 
-	public boolean isFirstMove() {
-		return firstMove;
-	}
+    public boolean isFirstMove() {
+        return firstMove;
+    }
 
-	public void setFirstMove(boolean firstMove) {
-		this.firstMove = firstMove;
-	}
+    public void move() {
+        this.firstMove = false;
+    }
 
-	public void setLastTile(Tile lastTile) {
-		this.lastTile = lastTile;
-	}
+    public void setLastTile( Tile lastTile ) {
+        this.lastTile = lastTile;
+    }
 
-	public void setLocation(Location location) {
-		this.location = location;
-	}
+    public void setLocation( Location location ) {
+        this.location = location;
+    }
 
 }

@@ -4,112 +4,113 @@ import pieces.Piece;
 import pieces.Type;
 
 public class Tile {
-	private boolean	attacked;
-	private boolean	defended;
-	private int		attackingTotal;
-	private int		row;
-	private int		column;
 
-	private String	textRepresentation	= "";
+    private boolean attacked;
+    private boolean defended;
+    private int     attackingTotal;
+    private int     row;
+    private int     column;
 
-	Piece			occupiedPiece;
+    private String  textRepresentation = "";
 
-	public Tile() {
+    private Piece   occupiedPiece;
 
-	}
+    public Tile() {
 
-	public int getAttackingTotal() {
-		return attackingTotal;
-	}
+    }
 
-	public int getColumn() {
-		return column;
-	}
+    public int getAttackingTotal() {
+        return attackingTotal;
+    }
 
-	public Piece getOccupiedPiece() {
-		return occupiedPiece;
-	}
+    public int getColumn() {
+        return column;
+    }
 
-	public int getRow() {
-		return row;
-	}
+    public Piece getOccupiedPiece() {
+        return occupiedPiece;
+    }
 
-	public String getTextRepresentation() {
-		return textRepresentation;
-	}
+    public int getRow() {
+        return row;
+    }
 
-	public boolean isAttacked() {
-		return attacked;
-	}
+    public String getTextRepresentation() {
+        return textRepresentation;
+    }
 
-	public boolean isDefended() {
-		return defended;
-	}
+    public boolean isAttacked() {
+        return attacked;
+    }
 
-	public boolean isOccupied() {
-		return occupiedPiece != null;
-	}
+    public boolean isDefended() {
+        return defended;
+    }
 
-	public void setAttacked(boolean attacked) {
-		this.attacked = attacked;
-	}
+    public boolean isOccupied() {
+        return occupiedPiece != null;
+    }
 
-	public void setAttackingTotal(int attackingTotal) {
-		this.attackingTotal = attackingTotal;
-	}
+    public void setAttacked( boolean attacked ) {
+        this.attacked = attacked;
+    }
 
-	public void setColumn(int column) {
-		this.column = column;
-	}
+    public void setAttackingTotal( int attackingTotal ) {
+        this.attackingTotal = attackingTotal;
+    }
 
-	public void setDefended(boolean defended) {
-		this.defended = defended;
-	}
+    public void setColumn( int column ) {
+        this.column = column;
+    }
 
-	public void setOccupiedPiece(Piece occupiedPiece) {
-		this.occupiedPiece = occupiedPiece;
-		this.textRepresentation = shortName( occupiedPiece );
-	}
+    public void setDefended( boolean defended ) {
+        this.defended = defended;
+    }
 
-	public void setRow(int row) {
-		this.row = row;
-	}
+    public void setOccupiedPiece( Piece occupiedPiece ) {
+        this.occupiedPiece = occupiedPiece;
+        this.textRepresentation = shortName( occupiedPiece );
+    }
 
-	public void setTextRepresentation(String textRepresentation) {
-		this.textRepresentation = textRepresentation;
-	}
+    public void setRow( int row ) {
+        this.row = row;
+    }
 
-	@Override
-	public String toString() {
-		return this.textRepresentation;
-	}
+    public void setTextRepresentation( String textRepresentation ) {
+        this.textRepresentation = textRepresentation;
+    }
 
-	private String shortName(Piece p) {
-        if ( p == null) {
+    @Override
+    public String toString() {
+        return this.textRepresentation;
+    }
+
+    private String shortName( Piece p ) {
+        if ( p == null ) {
             return "";
         }
-		String ret = "" + p.getColor( ).toString( ).charAt( 0 );
-		Type t = p.getType( );
-		switch ( t ) {
-		case PAWN:
-			ret += "P";
-			break;
-		case ROOK:
-			ret += "R";
-			break;
-		case KNIGHT:
-			ret += "N";
-			break;
-		case BISHOP:
-			ret += "B";
-			break;
-		case QUEEN:
-			ret += "Q";
-			break;
-		case KING:
-			ret += "K";
-			break;
-		}
-		return ret;
-	}
+        String ret = "" + p.getColor().toString().charAt( 0 );
+        Type t = p.getType();
+        switch ( t ) {
+            case PAWN:
+                ret += "P";
+                break;
+            case ROOK:
+                ret += "R";
+                break;
+            case KNIGHT:
+                ret += "N";
+                break;
+            case BISHOP:
+                ret += "B";
+                break;
+            case QUEEN:
+                ret += "Q";
+                break;
+            case KING:
+                ret += "K";
+                break;
+        }
+        return ret;
+    }
 }
